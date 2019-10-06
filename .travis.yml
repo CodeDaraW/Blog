@@ -8,6 +8,8 @@ branches:
   - master
 
 before_install:
+- git submodule update --init --recursive
+- ln theme.config.yml themes/Hacker/_config.yml
 - npm install -g hexo-cli
 
 install:
