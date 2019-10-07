@@ -7,15 +7,19 @@ branches:
   only:
   - master
 
+git:
+  submodules: false
+
 before_install:
+- sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
 - git submodule update --init --recursive
-- ln theme.config.yml themes/Hacker/_config.yml
 - npm install -g hexo-cli
 
 install:
 - npm install
 
 script:
+- ln theme.config.yml themes/Hacker/_config.yml
 - hexo generate
 
 deploy:
