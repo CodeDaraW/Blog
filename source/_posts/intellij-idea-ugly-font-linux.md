@@ -5,13 +5,13 @@ tags: [Intellij IDEA, Linux]
 ---
 之前遇到了一件奇怪的事，WebStorm中字体正常，IDEA直接导入WebStorm的设置备份也还是不行，如图所示。
 <!-- more -->
-![](http://ww1.sinaimg.cn/large/005KE4htgw1f9hf9q1cy0j31hc0u0181.jpg)
+![](https://ww1.sinaimg.cn/large/005KE4htgw1f9hf9q1cy0j31hc0u0181.jpg)
 
 本来这事也就放着不管了，昨天和Shaoxing聊天提到了这事，他提醒我正常情况下IDEA系列应该都是自带JDK的，于是我查了一下IDEA有带和不带JDK两个版本，自带JDK的会针对HiDPI和字体做一些优化。  
 
 我打开了WS和IDEA进行对比，发现他们的About信息中的JVM版本果然不一样：
-![](http://ww1.sinaimg.cn/large/005KE4htgw1fa3hgndesmj30hy0b6q6l.jpg)  
-![](http://ww1.sinaimg.cn/mw690/005KE4htgw1fa3hgo3t08j30ia0bkae3.jpg)  
+![](https://ww1.sinaimg.cn/large/005KE4htgw1fa3hgndesmj30hy0b6q6l.jpg)  
+![](https://ww1.sinaimg.cn/mw690/005KE4htgw1fa3hgo3t08j30ia0bkae3.jpg)  
 
 在IDEA的设置里手动切换了JVM版本后IDEA会自动重启，然而并没什么卵用，重启后JVM又回到了Oracle版本。  
 我突然想起曾经在环境变量中配置过`IDEA_JDK`，于是删除了这个变量，在终端中输出这个变量已经不存在，然而还是不行。  
