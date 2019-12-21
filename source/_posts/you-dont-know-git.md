@@ -6,6 +6,7 @@ tags: [Git, 版本控制]
 > 这是我最近在团队内做的一个关于 Git 的分享，反响还不错，故用此文记录。
 
 ![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-01_1576938158142.png)
+<!-- more -->
 
 # 前言
 ![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-03_1576938158277.png)
