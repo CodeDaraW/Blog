@@ -1,0 +1,103 @@
+title: 从一次 Bug 定位来看 Taro H5 的组件实现
+date: 2021-04-21 18:28:00
+categories: [前端]
+tags: [Taro, React]
+---
+
+## 背景
+
+目前我们的一款 C 端产品，在初期形态为小程序，但最近受限于微信审核较慢，我们将其改为了 H5 形态，规避微信审核，同时更好的支持迭代发版。
+
+在设计技术方案的时候，考虑到部分页面（尤其是报告类、分享类页面）之后可能会需要 H5 版本，所以选择了 Taro 作为跨端框架。
+
+Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中使用过了 Taro2，发现在 Taro2 中不少 React JSX 语法是受限的，而且一旦有比较多的动态 JSX 逻辑就容易遇到 Bug；在新项目启动时，看了 Taro3 的文档，Taro3 整体做了重构，运行时的设计保证了 React 语法可以随意使用，不再受限。虽然性能会有一定折损，但大幅提升了开发体验，所以综合考虑后选择了 Taro3。
+
+## 问题
+
+虽然整体来看很美好，但用深了之后还是遇到了几个 Taro H5 的 Bug，今天要分享的就是其中有一个印象深刻的 Bug：
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715767_6c25883657c46afaacf425bc44ea41ff.png)
+
+现象是小程序中正常：
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png)![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715848_12880f0525695a5cfca00314b0e0937d.png)
+
+而 H5 中 Modal 一直是 display: none ：
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png)![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png)
+
+根据现象得到了**初步结论**：这是 Taro 适配 H5 的 Bug 而不是 Taro 上层通用的运行时或者 React 的 Bug。
+
+## 排查
+
+### Step 1
+
+涉及到三方库的调试，断点+阅读源码是比较有效的排查手段。所以一边打断点，侧重看 Taro H5 侧的逻辑，一边配合略读 H5 组件库的源码来了解代码结构，这边略过断点过程，直接总结看到的结论：
+
+1.  发现 Taro H5 的组件类似 React，但又不是，在文件顶部还引入一个叫做 stencil 的库
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000716048_c244a6455f5ef5a87bc33a51ce88b3c3.png)
+
+2.  还有一个 reactify-wc，看注释是修改的一个开源库，这个开源库的 Readme 表示这是一个衔接 WebComponent 和 React 的库，在 React 中能够使用 WebComponent
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715857_7505573a44167d8eb4fe18fe38f1b537.png)
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715778_28c1a69c69005ff7b1a57ce134d06a3f.png)
+
+到这里可以得到进一步的结论：Taro H5 React 运行时中，借助 stencil 和 reactify-wc 实现了基于 WebComponent 的组件库，既然小程序没 Bug、React 本身也没 Bug，那么 Bug 大概率就是来源于这边，接下来重点关注这里。
+
+### Step 2
+
+由于是组件更新时才会触发的 Bug，继续打断点看组件更新的过程，这里略过打断点的过程，只讲思路：
+
+组件更新即 props 更新，所以侧重看 props 更新的逻辑，发现其只对新的 props 做了处理，虽然引入了 prevProps，但除了用来处理 class name 之外没做其他的事（为了保留 stencil 打标记用的 class name）：
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715939_4856a4cbbeea8bd62326bd23b8bde00f.png)
+
+显然这样处理明显是不能覆盖我们的场景（旧 props 中有 style，新 props 中没有），再仔细阅读以下针对 style 的处理，还可以发现有几种场景无法正常工作
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715881_c707ef370403bf9172e177ab2ce2eb9a.png)
+
+1.  旧 props 中 style 是 string 形式，新 props 中变成了 object 形式（之前的样式不会清除，直接 patch 新的）
+
+1.  旧 props 中 style object 和新 props 中的 object 的 keys 不对等（只 patch 新的）
+
+    1.  从这点延展开来看，会发现动态 props 也有问题，例如可以传入 abcd 四个 key，旧 props 中存在 abc，新 props 中存在 bcd，那么应该隐式的认为 a 在新 props 中为 undefined，但现在的逻辑不会处理 a
+
+### Step 3
+
+那么我们如何修复呢？
+
+1.  短期方案：减少 JSX 的动态性，避免动态的 style 结构和 props 结构
+
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715975_1bfa30934d12479f9c3317dd35586e97.png)
+
+2.  长期方案：修复 Taro H5 React 组件的 Bug
+
+第一反应是参考下 React 怎么做的，但打开 React 的 Codebase 后就放弃了，代码量太大，没法阅读，且内部有大量的针对细小问题的处理逻辑，参考价值不大。
+
+既然 React 无法参考，那我们可以看看其他的类 React 框架的实现，例如 Preact，整体代码量也没多少，全局搜索 props 就能很快定位到代码逻辑（https://github.com/preactjs/preact/blob/ec88035b34ad5d7843c329bcf14bbdaa77c52cf3/src/diff/props.js）：
+
+1.  先遍历旧 props，找出旧 props 有但新 props 没有的部分 key，当做新值为空值来处理
+
+1.  再遍历新的 props，其中 style 需要特殊处理
+
+    1.  新值是 string 直接赋值 cssText 即可
+    1.  旧值是 string 先给 cssText 赋值空字符串，来清空旧值的影响
+    1.  都是 object 再对新值和老值做类似 props 的 diff 和 patch
+
+参考 Preact 的实现，我给 Taro 提交了 fix PR https://github.com/NervJS/taro/pull/9088 。
+
+## 思考
+
+Taro3 为什么要绕一圈（Stencil => WebComponent => reactify-wc => React），而不直接基于原生的 HTML 标签简单封装一下 React 组件，这样既简单也不容易出问题？
+
+带着这个问题看了下 Taro2，发现 Taro2 确实是这么做的，说明这个思路是 work 的（https://github.com/NervJS/taro/blob/master/packages/taro-components/src/components/view/index.js）。
+
+接着阅读了 Taro3 的两个官方分享（参考资料 2 和 3），知道 Taro3 做了大重构，DSL 层面同时支持了 Vue / React，为了减少适配量，Taro H5 使用了 WebComponent 将公共逻辑做了复用，减少接入 Vue / React 上层视图框架的成本；再反观 Taro2，只需要支持 React 语法，不需要考虑 Vue，所以直接简单基于原生的 HTML 标签封装成 React 组件就可以了。
+
+## 参考
+
+1.  https://taro-docs.jd.com/taro/docs/README/
+1.  https://mp.weixin.qq.com/s?__biz=MzU3NDkzMTI3MA==&mid=2247483770&idx=1&sn=ba2cdea5256e1c4e7bb513aa4c837834
+1.  https://www.yuque.com/zaotalk/posts/cz8knq#HUlMM
