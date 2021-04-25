@@ -95,9 +95,9 @@
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>虽然整体来看很美好，但用深了之后还是遇到了几个 Taro H5 的 Bug，今天要分享的就是其中有一个印象深刻的 Bug：</p>
 <p><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715767_6c25883657c46afaacf425bc44ea41ff.png" alt=""></p>
 <p>现象是小程序中正常：</p>
-<p><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png" alt="">)<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715848_12880f0525695a5cfca00314b0e0937d.png" alt=""></p>
+<p><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png" alt=""><br><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715848_12880f0525695a5cfca00314b0e0937d.png" alt=""></p>
 <p>而 H5 中 Modal 一直是 display: none ：</p>
-<p><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png" alt="">)<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png" alt=""></p>
+<p><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png" alt=""><br><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png" alt=""></p>
 <p>根据现象得到了<strong>初步结论</strong>：这是 Taro 适配 H5 的 Bug 而不是 Taro 上层通用的运行时或者 React 的 Bug。</p>
 <h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><h3 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h3><p>涉及到三方库的调试，断点+阅读源码是比较有效的排查手段。所以一边打断点，侧重看 Taro H5 侧的逻辑，一边配合略读 H5 组件库的源码来了解代码结构，这边略过断点过程，直接总结看到的结论：</p>
 <ol>
