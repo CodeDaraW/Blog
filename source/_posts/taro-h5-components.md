@@ -22,11 +22,13 @@ Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中
 
 现象是小程序中正常：
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png)![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715848_12880f0525695a5cfca00314b0e0937d.png)
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png)
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715848_12880f0525695a5cfca00314b0e0937d.png)
 
 而 H5 中 Modal 一直是 display: none ：
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png)![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png)
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png)
+![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png)
 
 根据现象得到了**初步结论**：这是 Taro 适配 H5 的 Bug 而不是 Taro 上层通用的运行时或者 React 的 Bug。
 
