@@ -89,6 +89,8 @@
       
         <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>目前我们的一款 C 端产品，在初期形态为小程序，但最近受限于微信审核较慢，我们将其改为了 H5 形态，规避微信审核，同时更好的支持迭代发版。</p>
 <p>在设计技术方案的时候，考虑到部分页面（尤其是报告类、分享类页面）之后可能会需要 H5 版本，所以选择了 Taro 作为跨端框架。</p>
+<a id="more"></a>
+
 <p>Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中使用过了 Taro2，发现在 Taro2 中不少 React JSX 语法是受限的，而且一旦有比较多的动态 JSX 逻辑就容易遇到 Bug；在新项目启动时，看了 Taro3 的文档，Taro3 整体做了重构，运行时的设计保证了 React 语法可以随意使用，不再受限。虽然性能会有一定折损，但大幅提升了开发体验，所以综合考虑后选择了 Taro3。</p>
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>虽然整体来看很美好，但用深了之后还是遇到了几个 Taro H5 的 Bug，今天要分享的就是其中有一个印象深刻的 Bug：</p>
 <p><img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715767_6c25883657c46afaacf425bc44ea41ff.png" alt=""></p>
