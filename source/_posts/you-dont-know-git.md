@@ -5,11 +5,11 @@ tags: [Git, 版本控制]
 ---
 > 这是我最近在团队内做的一个关于 Git 的分享，反响还不错，故用此文记录。
 
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-01_1576938158142.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-01_1576938158142.png)
 <!-- more -->
 
 # 前言
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-03_1576938158277.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-03_1576938158277.png)
 
 首先，本文假设你已经对 Git 有了初步的认知：
 - 理解 Git 在本地的三种工作区域：Git 仓库、工作目录和暂存区域；
@@ -26,7 +26,7 @@ tags: [Git, 版本控制]
 - 命令操作主题将针对我们最常用的两个命令 `merge` 和 `rebase` 去解释它们是如何工作的。
 
 # 文件系统
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-05_1576938158647.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-05_1576938158647.png)
 
 ## Snapshot-based, not delta-based
 不知道大家有没有经历过不使用版本控制的项目，在大学期间我做第一个外包项目的时候，虽然已经了解了 Git 的基本使用方式，但是完全没有工程经验，不知道源代码版本控制的意义所在，没有选择使用版本控制，然后就吃了大亏。在开发初期还好，但在联调和交付阶段，细节变更频繁发生，而我应对变更区分版本的方式是复制文件夹，给文件夹命名版本号来区分版本，缓解了问题。
@@ -41,7 +41,7 @@ tags: [Git, 版本控制]
 
 可能在平时提交 commit、merge request 等变更行为之前，大家都会习惯性的去看一下 diff，也会对照 diff 进行 Code Review，这很容易给人一种错觉：Git 是基于差异的，但实际 Git 是基于快照的。
 
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-06_1576938160834.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-06_1576938160834.png)
 
 基于快照的优势在于，因为每个版本的文件都是直接保存的，可以更简单的实现快速切换版本，更易于实现分布式的特性（例如 patch），而带来的劣势在于存储空间会明显占用更多，一个文件即使改动一个字符也需要再单独存一份，当然 Git 也适度的做了一些优化，包括主动的和被动的（zlib 压缩、pack）；
 相比之下，基于差异的优势则是存储空间占用极低，几乎接近极限，而劣势则是如果想要做到和基于快照一样的切换版本速度，需要设计更复杂算法和逻辑（例如借助索引将版本切换时间降到常数级别）。
@@ -49,7 +49,7 @@ tags: [Git, 版本控制]
 这里不去过多探讨两种方式的差异，因为在工程中这是个取舍的问题。我们需要了解的是 Git 使用了基于快照的方式存储信息，这样便于理解接下来的内容。
 
 ## Objects
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-07_1576938160357.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-07_1576938160357.png)
 
 接下来我们一起来对 Git 文件系统的具体实现探个究竟。
 
@@ -130,7 +130,7 @@ Git 中的第四种对象：标签对象（tag object）。Git `tag` 分为两�
 Git 也可以手动触发垃圾回收：`git gc`，还可以设置自动垃圾回收策略的参数，例如刚刚的 7000 限制是个魔术数字，可以通过 `gc.autoPackLimit` 修改。
 
 ## Refs
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-08_1576938161011.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-08_1576938161011.png)
 
 我们可以通过一次 `commit` 的 SHA-1 值来查看它的内容，但是记住这个哈希值显然是不现实的，应该把这个哈希值存起来，用一种更简单的方式记住它，这种方式就是「引用（refs）」。我们可以在 `.git/refs` 文件夹中看到这些存储了哈希值的引用文件，随意打开一个一个仓库的 refs 目录，`HEAD` / `branch` / `tag` / `remotes` 在这里一览无余。
 
@@ -198,19 +198,19 @@ c36941c4987c38c5a92a1ae0d554dbf746177e71
 到这里 Git 文件系统部分的讲解就结束了，接下来是命令操作的讲解。
 
 # 命令操作
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-09_1576938158648.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-09_1576938158648.png)
 在准备分享内容的时候，一开始我计划设计一个章节来讲 Git 工作流，但发现常见的工作流涉及到的大多是文件系统原理和一些基本操作，上面我们已经讲过文件系统原理，这里与其讲工作流，不如讲讲最常见的操作 `merge` 和 `rebase`，理解了它们之后工作流只不过是灵活的组合形式。
 
 ## merge
 `merge` 是一个比较常用的命令，很多时候使用起来比较简单，但有的时候却会有一些不符合直觉的现象。
 
 ### Fast-Forward Merge：快进式合并
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-10_1576938160294.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-10_1576938160294.png)
 
 当合并的两个分支满足祖孙/父子关系时，Git 默认会使用快进式合并，最常见的场景是 `pull`，`pull` 的本质是 `fetch` + `merge`，由于一般在执行 `pull` 的时候远端分支相对本地分支是快进的，Git 可以直接合并，默认情况下不会产生 `merge commit`，但也可以通过参数 `--no-ff` 来禁止快进式合并。
 
 ### Three-Way Diff Merge：三路合并
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-11_1576938161012.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-11_1576938161012.png)
 
 上面我们讲到 Git 是基于快照的，每一个 `commit` 中都有全量的项目文件，所以在 `merge` 时，Git 不会使用那些中间的 `commit`，只去关注最新的 `commit`，但这还不够：
 
@@ -225,7 +225,7 @@ c36941c4987c38c5a92a1ae0d554dbf746177e71
 也许有同学会想，为啥解冲突时，我看到的只有当前节点与目标节点的差异，看不到公共祖先节点，这看起来像是两路合并？这是因为 Git 存在这一个配置项 `merge.conflictStyle` ，且该配置项默认值为 `merge`，可以将其设置为 `diff3`，这样之后看到的解决冲突界面就会出现祖先节点的文件内容。
 
 ### Recursive Three-Way Diff Merge：递归三路合并
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-12_1576938160993.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-12_1576938160993.png)
 
 有时候我们的场景可能没有上面那样简单，当前分支节点与目标分支节点之间可能存在多个公共祖先，先举一个有两个公共祖先的例子。
 
@@ -236,7 +236,7 @@ c36941c4987c38c5a92a1ae0d554dbf746177e71
 Git 提供了一个底层命令 `git merge-base`，可以用它来查找两个 `commit` 的公共祖先节点：`git merge-base <commit1> <commit2>`；另外在 UNIX 上还有一个 `diff3` 的命令，可以对三个文件进行三路 diff，这里就不再去展开讲了，大家可以自己进行尝试。
 
 ### 三路合并来带的陷阱
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-13_1576938160839.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-13_1576938160839.png)
 
 如果两个分支有同样的改动，并后续在一个分支上做了 `revert` 的操作，在将这两个分支进行合并的时候，`revert` 的行为会体现在最终合并的结果里，也就是最初的改动不会保留到合并的结果中。
 最常见的场景是，当一个特性分支在开发过程中被误合入主分支后，在主分支上 `revert` 了这个 `merge commit`，在特性开发完成再次合入主分支时，会发现上次合入的代码都丢失了。我在使用 Git 的过程中经历过几次这样的情况，也有其他的小伙伴遇到过，甚至有因为丢失代码出了线上事故的真实案例。
@@ -250,7 +250,7 @@ Git 提供了一个底层命令 `git merge-base`，可以用它来查找两个 `
 
 ## rebase
 ### 基本用法
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-14_1576938160090.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-14_1576938160090.png)
 
 很多时候大家对 `rebase` 的认知是可以帮忙引入其他分支的改动并解除冲突，也会和 `merge` 进行对比，因为这种场景下往往 `merge` 也可以达到类似的效果，但实际 `rebase` 的使用场景更广泛一些。
 
@@ -263,7 +263,7 @@ Git 先将所有在目标分支但不在上游分支的 `commit` 保存到一个
 每一次的 `commit` 重放都是一次三路合并：重放 `F1` 时，选择 `F1` 和 `B2` 的公共祖先节点 `B1` 作为 base；重放 `F2` 时，选择 `F2` 和 `F1’` 的公共祖先节点 `B1` 作为 base；在 `commit` 的数量更多的情况下依次类推。
 
 ### 修改当前分支的历史记录
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-15_1576938161366.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-15_1576938161366.png)
 
 在 Git 中并不存在一个专用的修改历史的命令，但我们可以借助 `rebase` 来修改历史。这里 `rebase` 的上游可以不只是其他的分支，也可以是当前分支的历史记录节点，配合 `rebase` 的交互模式，可以实现重写当前分支的历史：修改 `commit`、合并 `commit`、拆分 `commit`、调整 `commit` 顺序等等。
 实际使用也比较简单，可以看下 Git 文档，很容易上手，相关的文章也非常多，这里就不去赘述。
@@ -281,10 +281,10 @@ Git 先将所有在目标分支但不在上游分支的 `commit` 保存到一个
 
 这里不去探讨应该认可哪种观念，但客观来讲，正确、适度的使用 `rebase`，可以帮助我们得到更清晰的 commit log 和 branch graph，便于之后的查阅 `log` / `revert` / `cherry-pick`。
 
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-16_1576938161012.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-16_1576938161012.png)
 
 # 问答环节
-![](https://sf1-ttcdn-tos.pstatp.com/obj/ttfe/EV/git-17_1576938158628.png)
+![](https://cdn-cf.daraw.cn/blog/you-dont-know-git/git-17_1576938158628.png)
 
 ## 1. ​最佳实践
 记最佳实践不如理解本质。分享我的一些个人习惯，算不上最佳实践：

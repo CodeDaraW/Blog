@@ -106,7 +106,7 @@ module.exports = {
 
 综上，用户启动 CLI 后，CLI 会在本地起一个 RPC Server，收到调用请求后，如果用户为该方法配置了 Mock 数据，则返回配置好的 Mock 数据，否则根据 Thrift 文件的类型信息动态构造出 Mock Response 内容。
 
-![CLI 处理流程](//sf1-ttcdn-tos.pstatp.com/obj/ttfe/ev/4d42f7aa78192ebab572cbe468e984b9.png)
+![CLI 处理流程](https://cdn-cf.daraw.cn/blog/thrift-rpc-mock/4d42f7aa78192ebab572cbe468e984b9.png)
 
 ### 方案实现
 在确定方案后，很快开发出了基本可用的版本，由于和公司内基础设施耦合比较严重，这里不放出相关实现。

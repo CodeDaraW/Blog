@@ -18,17 +18,17 @@ Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中
 
 虽然整体来看很美好，但用深了之后还是遇到了几个 Taro H5 的 Bug，今天要分享的就是其中有一个印象深刻的 Bug：
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715767_6c25883657c46afaacf425bc44ea41ff.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715767_6c25883657c46afaacf425bc44ea41ff.png)
 
 现象是小程序中正常：
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png)
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715848_12880f0525695a5cfca00314b0e0937d.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715727_a16ea94b877a5468b90fb47caa7ac721.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715848_12880f0525695a5cfca00314b0e0937d.png)
 
 而 H5 中 Modal 一直是 display: none ：
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png)
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715763_22ce8515da1ed531a7b81c1ecff52659.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715732_180c2b41b1e1a3dc9239066babcecd64.png)
 
 根据现象得到了**初步结论**：这是 Taro 适配 H5 的 Bug 而不是 Taro 上层通用的运行时或者 React 的 Bug。
 
@@ -40,13 +40,13 @@ Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中
 
 1.  发现 Taro H5 的组件类似 React，但又不是，在文件顶部还引入一个叫做 stencil 的库
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000716048_c244a6455f5ef5a87bc33a51ce88b3c3.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000716048_c244a6455f5ef5a87bc33a51ce88b3c3.png)
 
 2.  还有一个 reactify-wc，看注释是修改的一个开源库，这个开源库的 Readme 表示这是一个衔接 WebComponent 和 React 的库，在 React 中能够使用 WebComponent
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715857_7505573a44167d8eb4fe18fe38f1b537.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715857_7505573a44167d8eb4fe18fe38f1b537.png)
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715778_28c1a69c69005ff7b1a57ce134d06a3f.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715778_28c1a69c69005ff7b1a57ce134d06a3f.png)
 
 到这里可以得到进一步的结论：Taro H5 React 运行时中，借助 stencil 和 reactify-wc 实现了基于 WebComponent 的组件库，既然小程序没 Bug、React 本身也没 Bug，那么 Bug 大概率就是来源于这边，接下来重点关注这里。
 
@@ -56,11 +56,11 @@ Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中
 
 组件更新即 props 更新，所以侧重看 props 更新的逻辑，发现其只对新的 props 做了处理，虽然引入了 prevProps，但除了用来处理 class name 之外没做其他的事（为了保留 stencil 打标记用的 class name）：
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715939_4856a4cbbeea8bd62326bd23b8bde00f.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715939_4856a4cbbeea8bd62326bd23b8bde00f.png)
 
 显然这样处理明显是不能覆盖我们的场景（旧 props 中有 style，新 props 中没有），再仔细阅读以下针对 style 的处理，还可以发现有几种场景无法正常工作
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715881_c707ef370403bf9172e177ab2ce2eb9a.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715881_c707ef370403bf9172e177ab2ce2eb9a.png)
 
 1.  旧 props 中 style 是 string 形式，新 props 中变成了 object 形式（之前的样式不会清除，直接 patch 新的）
 
@@ -74,7 +74,7 @@ Taro 目前在维护的有 2 和 3 两个大版本，之前在另一个项目中
 
 1.  短期方案：减少 JSX 的动态性，避免动态的 style 结构和 props 结构
 
-![](https://lf3-static.bytednsdoc.com/obj/eden-cn/dhyhkeh7vhobd/blog/1619000715975_1bfa30934d12479f9c3317dd35586e97.png)
+![](https://cdn-cf.daraw.cn/blog/taro-h5-components/1619000715975_1bfa30934d12479f9c3317dd35586e97.png)
 
 2.  长期方案：修复 Taro H5 React 组件的 Bug
 
