@@ -40,7 +40,7 @@ tags: [Taro, React, GMTC, 小程序]
 ### 虚拟列表
 虚拟列表的落地场景是首页的商品列表，商品列表的特点是长列表、功能复杂，这就导致了滚动两屏后容易卡顿，所以做了虚拟列表的落地：
 
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/45fcc4bd-04f6-4b5e-b576-cc1b76ff3d1a.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/45fcc4bd-04f6-4b5e-b576-cc1b76ff3d1a.png)
 
 - 结构改造
 虚拟列表常见的一个场景是整个页面长列表，但这里比较特殊，不是整个页面都是列表，而是只有页面的局部。所以这里组件本身不太好去监听页面的 scroll 事件，只能基于 Taro 的事件中心从组件外传进来滚动事件。
@@ -48,8 +48,8 @@ tags: [Taro, React, GMTC, 小程序]
 商品卡片的一个特点是不定高，直观的思路就是通过 DOM API 去获取卡片 DOM 的高度，但这里有个问题是小程序中的 DOM API（SelectorQuery）性能不太好，在这样的列表场景下大量去调用更加容易遇到性能问题。
 既然 DOM API 不可取，那可以从业务入手，可以发现卡片的高度可以根据内容计算出来，把各个组成部分的高度加起来即可。这个思路确实可行而且性能很好，但还是遇到了一个小问题：小程序计算出来的高度和实际 DOM 高度不一致，经过排查后发现是 rpx 换算规则导致高度不符合预期，1rpx 在绘制的时候会转换成 0.42px，而在计算的时候会转换成 0.426667px，积少成多这里就可能会带来偏差。解决办法也很简单，计算逻辑针对小程序平台做一下区分即可。
 
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/7aee8f83-0139-455a-8082-0bd70844325d.png)
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/f02bf3ee-7418-483a-a979-1f3371034fd7.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/7aee8f83-0139-455a-8082-0bd70844325d.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/f02bf3ee-7418-483a-a979-1f3371034fd7.png)
 
 - 白屏优化
 至于白屏优化则比较简单，是常见的骨架图，这里不再赘述。
@@ -88,10 +88,10 @@ tags: [Taro, React, GMTC, 小程序]
 - 样式命名优化
 JS 代码在编译的过程中 UglifyJS 可以将函数名简化成 a b c 这样；那么同理我们可以把组件内的 classname 进行优化。
 默认情况下 CSS 和 JSX 分离，很难把 JSX 中的 classname 和 CSS 中的 classname 建立关联。虽然可以做，但比较麻烦。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/6cfa979e-56cd-4fad-a20b-880edff0e1dd.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/6cfa979e-56cd-4fad-a20b-880edff0e1dd.png)
 
 所以京喜选择了 CSS Module 来建立样式和 JS 关联：
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/bf29be96-701a-4517-aca2-267e9852bda9.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/bf29be96-701a-4517-aca2-267e9852bda9.png)
 
 这样优化后，体积又减少了 50K，占项目总量 630K 的 7.9%。
 
@@ -149,24 +149,24 @@ JS 代码在编译的过程中 UglifyJS 可以将函数名简化成 a b c 这样
 
 ## uniCloud 的改进探索 
 - 跨云跨端：uniCloud SDK + uni-app runtime
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/9929d3b6-b181-43dd-aa08-6190d06d7370.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/9929d3b6-b181-43dd-aa08-6190d06d7370.png)
 
 - 规范制定：借助 JSON Schema 支持权限配置、字段校验、组件绑定，设计了一套 DSL 来做权限控制和字段校验
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/3e11ca9f-0038-402a-bbbd-290bca8d62c5.png)
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/3c0f3149-6014-4ef8-9df0-0c2f28349f24.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/3e11ca9f-0038-402a-bbbd-290bca8d62c5.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/3c0f3149-6014-4ef8-9df0-0c2f28349f24.png)
 
 - clientDB 云端一体化：前端 DB SDK + 数据组件
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/20b8612f-2911-4e5e-b2b4-8e401453c162.png)
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/3c1cfaad-54b0-4159-b569-c88bd8b428c7.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/20b8612f-2911-4e5e-b2b4-8e401453c162.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/3c1cfaad-54b0-4159-b569-c88bd8b428c7.png)
 
 ## 智能生成小程序代码(Schema2Code) 
 大家大多接触过类似的 LowCode 方案，这里不详细讲了，只贴一张图，更多的可以看下 PPT。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/340fc5b3-b0c1-488c-a308-5cb29ff8f58d.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/340fc5b3-b0c1-488c-a308-5cb29ff8f58d.png)
 
 ## 未来的轮子生态 
 在当下前后端分离导致前后端轮子生态割裂，前端框架和后端框架之间有着很大的沟壑；在前端承载越来越多职责的背景下，未来可能会往云端一体化的方向去发展。
 但目前的云开发虽然高效，但局限很大，难以满足复杂的业务，未来探索的方向包含两个：对复杂业务场景的更好支持（跨云跨端、精细化权限、严格字段校验、前端数据组件）和基于云开发模式下的代码生成思路。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/5f996f7d-011f-457b-bbca-0cf5e5a43fcf.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/5f996f7d-011f-457b-bbca-0cf5e5a43fcf.png)
 
 ## Q&A 环节
 - 云端 MongoDB 数据库可能是低版本不支持事务，那么怎么实现事务
@@ -191,7 +191,7 @@ JS 代码在编译的过程中 UglifyJS 可以将函数名简化成 a b c 这样
 不同于业内主流小程序框架追求将 Web MVVM 框架（React/Vue）运行在小程序环境中 的思路，Mpx以小程序原生的语法和技术能力为基础，借鉴参考了 Vue 框架中的优良语法设计，通过编译和运行时手段对其进行增强扩展，让用户能够以接近 Vue 的体验和方式来进行小程序开发，并保持与原生小程序一致甚至更优的性能与包体积。 
 
 ### 业内小程序框架异同对比 - 性能与效率的权衡
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/26ffe296-db43-427c-b486-0ed8f885fd6d.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/26ffe296-db43-427c-b486-0ed8f885fd6d.png)
 目前业界比较常见的两种框架类型是静态编译型和动态渲染型：
 - 静态编译型以 uni-app 和 Taro2 为代表：
   - DSL 层 uni-app 为 Vue，Taro2 为 React
@@ -265,7 +265,7 @@ Mpx 参考了 Vue2 的实现，基于 `defineProperty` 实现了数据响应式�
 
 ### render 函数生成流程
 第一次编译将模板编译为原始的渲染函数，但这个原始的渲染函数没法直接在运行时使用，所以会基于 Babel 再做二次编译，去关联 this 上下文，便于之后可以直接在运行时使用。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/958a7c79-59b8-4799-86cd-90802c070c06.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/958a7c79-59b8-4799-86cd-90802c070c06.png)
 
 ### Mpx setData 优化效果
 在滴滴使用 Mpx 的项目中，没有手动去做 setData 优化，但性能一直很优秀。Mpx 的性能在 benchmark 场景下也是最优。
@@ -311,7 +311,7 @@ Mpx 1.0 针对各个平台都做了增强，到了 2.0 则以微信小程序作�
 
 ## Mpx 多语言支持
 由于小程序是双线程架构，应该尽量减少 setData 数据传输，所以 Mpx i18n 方案有两种，一种是 wxs 模式，把多种语言文案放在模板中，这种方案没有额外的通信开销，性能比较好，但问题是会导致包体积增大，语言包同时存在于 wxs 和 js 中，且因为文案在编译期就决定了，后续无法异步加载；另一种方案是 computed 模式，优缺点与 wxs 模式刚好相反，通信开销较大，但包体积占用较小，且可以实现异步加载语言包。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/830f1dd3-80d9-4fb9-95b5-c3e4b8bd0fc2.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/830f1dd3-80d9-4fb9-95b5-c3e4b8bd0fc2.png)
 
 ## 展望与未来
 - Webpack5 构建升级，大幅提升构建速度
@@ -355,8 +355,8 @@ Web 发展至今，HTML、CSS、JS 基本已经成了**事实汇编语言**，�
 
 那么就有人想到了，是不是可以做一个万能模板，这个万能模板能够描述一切的页面，模板和 JS 之前的 data 就是 VDOM 的 AST？
 如果大家有使用 Taro3 的项目，可以看下编译产物的目录，base.wxml 就是这个万能模板，而小程序 IDE 中的 AppData 就是页面的 AST：
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/4a77a528-6b79-4b80-a1bd-db56afe175dd.png)
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/949b817d-56c0-4088-a84c-ac5b43be2257.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/4a77a528-6b79-4b80-a1bd-db56afe175dd.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/949b817d-56c0-4088-a84c-ac5b43be2257.png)
 
 这就很舒服了，可以模拟出一切 DOM 操作。
 这种方案很多人都会说性能不太好，这里也详细聊下，为什么会说性能不好：
@@ -393,7 +393,7 @@ Mpx 中谈到的小程序包体积分析工具的局限，其实在各个框架�
 
 ### 小程序运行时架构
 首先最底层是接入宿主 App，提供小程序运行环境和管理能力；在这之上是 Native 运行时，可能是常见的 Android 和 iOS，也可以是 IoT 设备，提供页面堆栈和端能力；再上面是跨端信道，支持多端通信；最上层就是 JSSDK，也就是小程序的 JS 运行时，提供组件、API、渲染等核心能力，这也是接下来要重点关注的内容。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/d2d54ecd-8576-4307-a67b-986f68c4acf3.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/d2d54ecd-8576-4307-a67b-986f68c4acf3.png)
 
 ### 小程序运行流程
 用户的小程序会经过四个流程，最终被运行起来：
@@ -414,7 +414,7 @@ Mpx 中谈到的小程序包体积分析工具的局限，其实在各个框架�
 - 对可测试性也会有要求
 
 总结来说，开发者会关注开发的限制，又关注学习成本，不接受较高的学习成本。根据上述的背景，小程序第一版的渲染框架做了两套分离的组件设计。
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/ff49af8d-b5b3-4e89-aeb2-e20c7002b281.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/ff49af8d-b5b3-4e89-aeb2-e20c7002b281.png)
 
 这样一套分离的方案在早期带来了一些好处：
 - 抽象不一样，可以并行去开发
@@ -464,18 +464,18 @@ Mpx 中谈到的小程序包体积分析工具的局限，其实在各个框架�
 ### ChildFlag
 结构的稳定性对于性能优化很重要，如图所示的一段结构，第一部分 `hello` 很明显固定的永远是一个字符串节点，第二部分则会在 `boolean` 和 `VNode` 两种节点之间不断切换。
 
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/6cde70aa-a3a9-4c48-a577-d8ebb010cf26.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/6cde70aa-a3a9-4c48-a577-d8ebb010cf26.png)
 
 在之前 React 对于这种场景，只会在运行时不断地 typeof 来做判断，这给运行时带来了极大的压力，现在 React 会针对这种场景去给节点做 memorize，类似 V8 中 hidden class 的优化，如果传递的参数是稳定的，V8 会跳过参数的校验直接运行。
 通过给节点加各种标识符，线上 diff 的压力减少了 70%，也就是 diff 性能提升了三倍：
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/60b45f01-4732-402e-a674-676c0cc2165b.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/60b45f01-4732-402e-a674-676c0cc2165b.png)
 
 当然这种标识符让用户手写肯定不现实，但由于有编译期的存在，可以在编译期去自动加标识符。
 
 ### VNode Immutability
 例如图中的代码，如果 children 一直不会发生变化，就给 children 标记为不可变的节点，这样在后续的 diff 中就可以跳过它，减少 diff 工作量。
 
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/45d3fb18-ba1f-46c7-a63e-075b4d100d7d.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/45d3fb18-ba1f-46c7-a63e-075b4d100d7d.png)
 
 除了这些优化外，还做了很多的优化，例如 V8 core dump，去观察性能是否有劣化。
 
@@ -485,7 +485,7 @@ yaw 目前还有一个未上线的优化版本，其中模仿 vue-next 和 Svelt
 
 ## 性能工具与调优
 一共有三种工具，第一种是客户端性能分析工具，在客户端可以打开显示性能数据，可以看到 CPU、内存等实际的占用信息；第二种是 IDE 性能 trace 工具，可以细粒度的去看性能数据；第三种是 IDE 性能评分工具，可以粗略的去看性能优化点。三种工具详细的对比如下图：
-![](https://cdn-cf.daraw.cn/blog/gmtc-beijing-2021-mp/1028a6a1-eb87-46a7-903e-466609fbfb7d.png)
+![](https://cdn-eo.daraw.cn/blog/gmtc-beijing-2021-mp/1028a6a1-eb87-46a7-903e-466609fbfb7d.png)
 
 ## 思考
 这次分享更多的是 inside-out，将小程序厂商内部的细节展示出来，让外部的开发者了解其设计和实现。
